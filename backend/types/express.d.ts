@@ -10,8 +10,10 @@ declare global {
       type: 'access' | 'refresh';
     }
 
+    interface User extends UserPayload {}
+
     interface Request {
-      user?: UserPayload;
+      user?: User;
     }
   }
 }

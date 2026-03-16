@@ -41,6 +41,14 @@ router.post('/', authMiddleware, requireRole('User'), async (req, res) => {
   return res.status(201).json(booking);
 });
 
+router.get('/mine', authMiddleware, requireRole('User'), async (req, res) => {
+  const bookings = await BookingModel.find({ userId: req.user!.userId })
+    .populate('cakeId', 'name price imageURL')
+    .sort({ createdAt: -1 });
+
+  return res.json(bookings);
+});
+
 router.get('/', authMiddleware, requireRole('Manager', 'Admin'), async (_req, res) => {
   const bookings = await BookingModel.find()
     .populate('userId', 'email role')
@@ -96,6 +104,49 @@ router.get('/top-cakes', authMiddleware, requireRole('Manager', 'Admin'), async 
   ]);
 
   return res.json(topCakes);
+});
+
+router.get('/top-buyers', authMiddleware, requireRole('Manager', 'Admin'), async (_req, res) => {
+  const topBuyers = await BookingModel.aggregate([
+    {
+      $lookup: {
+        from: 'cakes',
+        localField: 'cakeId',
+        foreignField: '_id',
+        as: 'cake',
+      },
+    },
+    { $unwind: '$cake' },
+    {
+      $group: {
+        _id: '$userId',
+        totalBookings: { $sum: 1 },
+        totalSpend: { $sum: '$cake.price' },
+      },
+    },
+    { $sort: { totalBookings: -1, totalSpend: -1 } },
+    { $limit: 5 },
+    {
+      $lookup: {
+        from: 'users',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'user',
+      },
+    },
+    { $unwind: '$user' },
+    {
+      $project: {
+        _id: 0,
+        userId: '$user._id',
+        email: '$user.email',
+        totalBookings: 1,
+        totalSpend: 1,
+      },
+    },
+  ]);
+
+  return res.json(topBuyers);
 });
 
 export default router;

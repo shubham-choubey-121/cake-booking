@@ -1,13 +1,14 @@
 import { FormEvent, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import api from '../../utils/api';
+import { getApiErrorMessage } from '../../utils/errors';
 import { ROUTES } from '../../utils/routes';
 
 export default function SignupPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('User');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,27 +20,28 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      await api.post('/auth/signup', { email, password, role });
+      await api.post('/auth/signup', { email, password });
       setMessage('Signup successful. Redirecting to login...');
       setTimeout(() => router.push(ROUTES.login), 900);
-    } catch (err: any) {
-      setError(err?.response?.data?.message || 'Signup failed');
+    } catch (error: unknown) {
+      setError(getApiErrorMessage(error, 'Signup failed'));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="page center-bg">
-      <div className="card auth-card">
-        <h1>Signup</h1>
-        <p>Create your account and select role.</p>
-        <form onSubmit={onSubmit}>
+    <main className="page-centered">
+      <div className="auth-box">
+        <h1>Create account 🎂</h1>
+        <p className="muted">Join CakeBook and choose your workspace role.</p>
+
+        <form className="auth-form" onSubmit={onSubmit}>
           <input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             type="email"
-            placeholder="Email"
+            placeholder="Email address"
             required
           />
           <input
@@ -49,17 +51,17 @@ export default function SignupPage() {
             placeholder="Password"
             required
           />
-          <select value={role} onChange={(e) => setRole(e.target.value)}>
-            <option value="User">User</option>
-            <option value="Manager">Manager</option>
-            <option value="Admin">Admin</option>
-          </select>
-          <button disabled={loading} type="submit">
-            {loading ? 'Creating account...' : 'Signup'}
+          <button className="btn-submit" disabled={loading} type="submit">
+            {loading ? 'Creating account…' : 'Create Account'}
           </button>
         </form>
+
         {message && <p className="ok">{message}</p>}
         {error && <p className="err">{error}</p>}
+
+        <p className="hint">
+          Already registered? <Link href={ROUTES.login}>Sign in</Link>
+        </p>
       </div>
     </main>
   );

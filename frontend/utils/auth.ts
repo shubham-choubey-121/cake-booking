@@ -50,3 +50,8 @@ export const clearUser = () => {
   }
   localStorage.removeItem(USER_KEY);
 };
+
+export const clearSession = () => {
+  clearAccessToken();
+  clearUser();
+};

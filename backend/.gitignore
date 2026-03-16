@@ -1,4 +1,10 @@
+
 node_modules/
 dist/
 build/
 .vscode/
+tests/
+.env.example
+.env
+.env.local
+.env.production

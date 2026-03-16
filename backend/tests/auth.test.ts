@@ -38,4 +38,5 @@ describe('Auth routes', () => {
     expect(res.status).toBe(201);
     expect(res.body.user.email).toBe('x@test.com');
   });
+
 });

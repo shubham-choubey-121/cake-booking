@@ -54,7 +54,7 @@ Full-stack mini cake booking platform with role-based workflows:
 2. From project root, run:
 
 ```bash
-docker compose up --build
+cd
 ```
 
 3. Start frontend separately:
