@@ -32,6 +32,14 @@ app.get('/health', (_req, res) => {
   res.json({ ok: true });
 });
 
+app.get('/', (_req, res) => {
+  res.json({
+    ok: true,
+    message: 'Cake Booking API is running',
+    health: '/health',
+  });
+});
+
 app.use('/auth', authRoutes);
 app.use('/cakes', cakesRoutes);
 app.use('/bookings', bookingsRoutes);
