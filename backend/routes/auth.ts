@@ -112,6 +112,10 @@ router.post('/login', async (req, res) => {
     return res.status(401).json({ message: 'Invalid credentials' });
   }
 
+  if (!user.passwordHash) {
+    return res.status(401).json({ message: 'This account uses OAuth login (Google/GitHub). Please login with that instead.' });
+  }
+
   const validPassword = await bcrypt.compare(password, user.passwordHash);
   if (!validPassword) {
     return res.status(401).json({ message: 'Invalid credentials' });
@@ -305,6 +309,10 @@ router.post('/change-password', authMiddleware, async (req, res) => {
   const user = await UserModel.findById(req.user!.userId);
   if (!user) {
     return res.status(404).json({ message: 'User not found' });
+  }
+
+  if (!user.passwordHash) {
+    return res.status(400).json({ message: 'OAuth account has no password. Cannot change password.' });
   }
 
   const matches = await bcrypt.compare(currentPassword, user.passwordHash);

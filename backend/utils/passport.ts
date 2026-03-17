@@ -1,5 +1,3 @@
-import crypto from 'crypto';
-import bcrypt from 'bcryptjs';
 import passport from 'passport';
 import { Strategy as GoogleStrategy, Profile as GoogleProfile, VerifyCallback as GoogleVerifyCallback } from 'passport-google-oauth20';
 import { Strategy as GithubStrategy, Profile as GithubProfile } from 'passport-github2';
@@ -11,11 +9,8 @@ const buildOAuthUser = async (email: string, displayName: string | undefined) =>
     return existing;
   }
 
-  const randomPassword = crypto.randomUUID();
-  const passwordHash = await bcrypt.hash(randomPassword, 10);
   return UserModel.create({
     email,
-    passwordHash,
     role: 'User',
   });
 };

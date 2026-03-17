@@ -4,7 +4,7 @@ export type Role = 'Admin' | 'Manager' | 'User';
 
 export interface IUser extends Document {
   email: string;
-  passwordHash: string;
+  passwordHash?: string;
   role: Role;
   isApproved: boolean;
   refreshTokens: string[];
@@ -15,7 +15,7 @@ export interface IUser extends Document {
 const userSchema = new Schema<IUser>(
   {
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    passwordHash: { type: String, required: true },
+    passwordHash: { type: String, required: false },  // optional for OAuth users
     role: { type: String, enum: ['Admin', 'Manager', 'User'], default: 'User' },
     isApproved: { type: Boolean, default: true },
     refreshTokens: { type: [String], default: [] },
