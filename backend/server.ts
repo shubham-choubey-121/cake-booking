@@ -16,10 +16,15 @@ import './utils/passport';
 
 export const app = express();
 
-const allowedOrigins = (process.env.FRONTEND_ORIGIN || 'http://localhost:3000')
+// Configure allowed origins - support multiple origins separated by comma
+const allowedOrigins = (process.env.FRONTEND_ORIGIN || 'http://localhost:3000,https://cake-booking.vercel.app')
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);
+
+// Log CORS configuration on startup
+console.log('🔐 CORS Configuration:');
+console.log('  Allowed Origins:', allowedOrigins);
 
 app.use(
   cors({
@@ -29,6 +34,7 @@ app.use(
         return;
       }
 
+      console.warn(`⚠️  CORS blocked for origin: ${origin}. Allowed: ${allowedOrigins.join(', ')}`);
       callback(new Error(`CORS blocked for origin: ${origin}`));
     },
     credentials: true,
